@@ -42,17 +42,17 @@ def add_matrices(data, routing):
             raise ValueError("Missing coordinates for vehicle.")
         
         if "start" in v:
-            v["start_index"] = get_index(locs, index_of_know_locations, v["start"])
+            v["start_index"] = get_index(locs, index_of_known_locations, v["start"])
         if "end" in v:
-            v["end_index"] = get_index(locs, index_of_know_locations, v["end"])
+            v["end_index"] = get_index(locs, index_of_known_locations, v["end"])
     
     if "jobs" in data:
         for job in data["jobs"]:
             if "location" not in job:
-                raise Valueerror("Missing coordinates for job.")
+                raise ValueError("Missing coordinates for job.")
             else:
                 job["location_index"] = get_index(
-                    locs, index_of_know_locations, job["location"]
+                    locs, index_of_known_locations, job["location"]
                 )
 
     if "shipments" in data:
@@ -61,13 +61,13 @@ def add_matrices(data, routing):
                 raise ValueError("Missing coordinates for shipment pickup.")
             else:
                 shipment["pickup"]["location_index"] = get_index(
-                    locs, index_of_know_locations, shipment["pickup"]["location"]
+                    locs, index_of_known_locations, shipment["pickup"]["location"]
                 )
             if "location" not in shipment["delivery"]:
                 raise ValueError("Missing coordinates for shipment delivery.")
             else:
                 shipment["delivery"]["location_index"] = get_index(
-                    locas, index_of_know_locations, shipment["delivery"]["location"]
+                    locals, index_of_known_locations, shipment["delivery"]["location"]
                 )
 
     data["matrices"] = {}
