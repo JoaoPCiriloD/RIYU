@@ -92,4 +92,4 @@ def write_files(file_name, location, geojson, csv):
             json.dump(format_geojson_from_locations(location), out, indent=2)
     
     if csv:
-        writse_to_csv(file_name, json_input)
+        write_csv_header(file_name, json_input)

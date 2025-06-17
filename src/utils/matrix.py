@@ -1,4 +1,4 @@
-from utils.osrm import table as osrm_table
+from utils.ors import table as osrm_table
 from utils.ors import table as ors_table
 
 def round_to_cost(d):
@@ -36,7 +36,7 @@ def add_matrices(data, routing):
         if "profile" in v:
             profiles.add(v["profile"])
         else:
-            profile.add("car")
+            profiles.add("car")
 
         if ("start" not in v) and ("end" not in v):
             raise ValueError("Missing coordinates for vehicle.")
@@ -56,3 +56,24 @@ def add_matrices(data, routing):
                 )
 
     if "shipments" in data:
+        for shipment in data["shipments"]:
+            if "location" not in shipment["pickup"]:
+                raise ValueError("Missing coordinates for shipment pickup.")
+            else:
+                shipment["pickup"]["location_index"] = get_index(
+                    locs, index_of_know_locations, shipment["pickup"]["location"]
+                )
+            if "location" not in shipment["delivery"]:
+                raise ValueError("Missing coordinates for shipment delivery.")
+            else:
+                shipment["delivery"]["location_index"] = get_index(
+                    locas, index_of_know_locations, shipment["delivery"]["location"]
+                )
+
+    data["matrices"] = {}
+
+    for p in profiles:
+        if p not in routing["profiles"]:
+            raise ValueError("Invalid profile: " + p)
+        
+        data["matrizes"][p] = {"durations": [], "distances": []}
