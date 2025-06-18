@@ -114,3 +114,6 @@ def parse_dlp(input_file, cities_lines):
                     "description": str(v_type),
                 }
             )
+
+    jobs = []
+    jobs_start = FIRST_LINE + meta
