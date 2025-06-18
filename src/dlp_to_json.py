@@ -82,4 +82,35 @@ def parse_dlp(input_file, cities_lines):
             "vehicles": 0,
         }
     }
-    depot_index = parse_depot(lines[FIRST_LINE + meta]["VEHICLES_TYPES"] + 1)
+    depot_index = parse_depot(lines[FIRST_LINE + meta["VEHICLES_TYPES"] + 1])
+
+    matrix_start = FIRST_LINE + meta["VEHICLES_TYPES"] + 2
+    matrix = parse_matrix(lines[matrix_start : matrix_start + meta["JOBS"] + 1])
+
+    vehicles = []
+
+    for v_type in range(1, meta["VEHICLES_TYPES"] + 1):
+        line = lines[FIRST_LINE + v_type]
+        vehicle = line.split()
+
+        v_number = int(vehicle[0])
+        v_capacity = int(vehicle[1])
+        v_fixed_cost = int(CUSTOM_PRECISION * float(vehicle[2]))
+        v_du_cost = float(vehicle[3]) 
+
+        BKS[instance_name]["vehicles"] += v_number
+        BKS[instance_name]["total_capacity"] += v_number * v_capacity
+
+        for n in range(v_number):
+            vehicles.append(
+                {
+                    "id": v_type * 1000 + n,
+                    "start": cities[0]["location"],
+                    "start_index": depot_index,
+                    "end": cities[0]["location"],
+                    "end_index": depot_index,
+                    "capacity": [v_capacity],
+                    "costs": {"fixed": v_fixed_cost, "per_hour": int(3600 * v_du_cost)},
+                    "description": str(v_type),
+                }
+            )
