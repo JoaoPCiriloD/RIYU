@@ -2,7 +2,6 @@ import json
 import sys
 from utils.benchmark import get_value, parse_demand, parse_node_coords, get_matrix
 
-# Generate a json-formatted problem from a CVRPLIB file.
 
 VEHICLE_MARGIN_FACTOR = 1.07
 
@@ -21,14 +20,11 @@ def parse_cvrp(input_file):
     with open(input_file, "r") as f:
         lines = f.readlines()
 
-    # Remember main fields describing the problem type.
     meta = {}
     for s in CVRP_FIELDS:
         data = get_value(s, lines)
         if data:
             meta[s] = data
-
-    # Only support EUC_2D for now.
     if ("EDGE_WEIGHT_TYPE" not in meta) or (meta["EDGE_WEIGHT_TYPE"] != "EUC_2D"):
         message = "Unsupported EDGE_WEIGHT_TYPE"
         if "EDGE_WEIGHT_TYPE" in meta:
@@ -40,13 +36,9 @@ def parse_cvrp(input_file):
 
     meta["DIMENSION"] = int(meta["DIMENSION"])
     meta["CAPACITY"] = int(meta["CAPACITY"])
-
-    # Find start of nodes descriptions.
     node_start = next(
         (i for i, s in enumerate(lines) if s.startswith("NODE_COORD_SECTION"))
     )
-
-    # Defining all jobs.
     jobs = []
     coords = []
 
@@ -66,7 +58,6 @@ def parse_cvrp(input_file):
             }
         )
 
-    # Add all job demands.
     total_delivery = 0
     total_pickup = 0
     demand_start = next(
@@ -76,14 +67,12 @@ def parse_cvrp(input_file):
         demand_line = parse_demand(lines[i])
 
         if len(demand_line) < 2:
-            # Same as above in job parsing.
             break
 
         job_id = int(demand_line[0])
         current_demand = int(demand_line[1])
 
         for j in jobs:
-            # Add demand to relevant job.
             if j["id"] == job_id:
                 if j["type"] == "linehaul":
                     j["delivery"] = [current_demand]
@@ -95,21 +84,16 @@ def parse_cvrp(input_file):
                 j.pop("type")
                 break
 
-    # Find depot description.
     depot_start = next(
         (i for i, s in enumerate(lines) if s.startswith("DEPOT_SECTION"))
     )
 
     depot_def = lines[depot_start + 1].strip().split(" ")
     if len(depot_def) == 2:
-        # Depot coordinates are provided, we add them at the end of coords
-        # list and remember their index.
         depot_loc = [float(depot_def[0]), float(depot_def[1])]
         depot_index = len(coords)
         coords.append(depot_loc)
     else:
-        # Depot is one of the existing jobs, we retrieve loc and index in
-        # coords, then remove the job.
         depot_id = int(depot_def[0])
         job_index = next((i for i, j in enumerate(jobs) if j["id"] == depot_id))
         depot_loc = jobs[job_index]["location"]
@@ -123,8 +107,6 @@ def parse_cvrp(input_file):
         nb_vehicles = meta["VEHICLES"]
     else:
         if "X" in meta["NAME"]:
-            # Number of vehicles is not limited for this class so we
-            # take some margin.
             nb_vehicles = int(
                 1
                 + (
@@ -134,7 +116,6 @@ def parse_cvrp(input_file):
                 )
             )
         else:
-            # Use provided number of vehicle as strict max number.
             nb_vehicles = int(meta["NAME"][meta["NAME"].find("k") + 1 :])
 
     is_VRPB = (total_pickup != 0) and (total_delivery != 0)
