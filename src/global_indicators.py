@@ -52,4 +52,3 @@ if __name__ == "__main__":
         r["computing_times"]["routing"],
         s,
     )
-
