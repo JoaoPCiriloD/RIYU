@@ -1,6 +1,6 @@
 import json
 import sys
-from import cities_file
+from utils.file import cities_file
 CUSTOM_PRECISION = 1000
 
 FIRST_LINE = 5
@@ -67,4 +67,6 @@ def parse_dlp(input_file, cities_lines):
     with open(input_file, "r") as f:
         lines = f.readlines()
 
-   cities = get_cities(cities_lines)
+    cities = get_cities(cities_lines)
+
+    meta = parse.
