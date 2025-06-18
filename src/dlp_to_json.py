@@ -9,7 +9,7 @@ def parse_meta(line):
     meta = line.split()
     return {"JOBS": int(meta[0]), "VEHICLES_TYPES": int(meta[1])}
 
-def parse_vehicle(line):
+def parse_depot(line):
     depot = line.split()
     return int(depot[0]), 
     
@@ -69,4 +69,17 @@ def parse_dlp(input_file, cities_lines):
 
     cities = get_cities(cities_lines)
 
-    meta = parse.
+    meta = parse_meta(lines[FIRST_LINE])
+
+    instance_name = input_file[: input_file.rfind(".")]
+    BKS = {
+        instance_name: {
+            "class": "DLP",
+            "best_known_cost": 0,
+            "jobs": meta["JOBS"],
+            "total_demand": 0,
+            "total_capacity": 0,
+            "vehicles": 0,
+        }
+    }
+    depot_index = parse_depot(lines[FIRST_LINE + meta]["VEHICLES_TYPES"] + 1)
