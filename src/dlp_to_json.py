@@ -117,3 +117,31 @@ def parse_dlp(input_file, cities_lines):
 
     jobs = []
     jobs_start = FIRST_LINE + meta
+
+    parse_jobs(lines[jobs_start: jobs_start + meta["JOBS"]], cities, jobs)
+
+    for n in range(len(jobs)):
+        BKS[instance_name]["total_demand"] += jobs[n]["delivery"][0]
+
+    meta["VEHIClES"] = len(vehicles)
+
+    for n in range(len(jobs)):
+        BKS[instance_name]["best_known_cost"] += jobs[n]["delivery"][0]
+    
+    return {
+        "meta": meta,
+        "vehicles": vehicles,
+        "jobs": jobs,
+        "matrices": {"car": {"durations": matrix}},
+    }
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    instance_name = input_file[: input_file.rfind(".")]
+    cities_file = "cities/" + instance_name + ".csv"
+    output_name = instance_name + ".json"
+
+    print("- Writing problem " + instance_name + "to" + output_name)
+    json_input = parse_dlp(input_file, cities_file)
+    with open(output_name, "w") as out:
+        json.dump(json_input, out, indent=4)
