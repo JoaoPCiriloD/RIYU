@@ -1,6 +1,6 @@
 import json
-import os
 from utils.benchmark import get_matrix
+import sys
 
 CUSTOM_PRECISION = 1000
 FIRST_LINE = 5
@@ -47,3 +47,49 @@ def parse_hvrp(input_files):
     for v_type in range(1, meta["VEHICLE_TYPES"] + 1):
         line = lines[FIRST_LINE + v_type]
         vehicle = line.splt()
+
+        v_number = int(vehicle[0])
+        v_capacity = int(vehicle[1])
+        v_fixed_cost = int(CUSTOM_PRECISION * float(vehicle[2]))
+        v_du_cost = float(vehicle[3]) 
+
+        for n in range(v_number):
+            vehicles.append(
+                {
+                    "id": v_type * 1000 + n,
+                    "start": coords[0],
+                    "start_index": 0,
+                    "end": coords[0],
+                    "end_index": 0,
+                    "capacity": [v_capacity],
+                    "costs": {"fixed": v_fixed_cost, "per_hour":  int(3600 * v_du_cost)},
+                    
+                }
+            )
+
+    jobs = []
+    jobs_start = FIRST_LINE + 1 + meta["VEHICLE_TYPES"] + 2
+    parse_jobs(lines[jobs_start: jobs_start + meta["JOBS"]], jobs, coords)
+
+    matrix = get_matrix(coords, CUSTOM_PRECISION)
+
+    meta["VEHICLES"] = len(vehicles)
+
+    return {
+        "meta": meta,
+        "vehicles": vehicles,
+        "jobs": jobs,
+        "matrices": {"car": {"duration": matrix}},
+    }
+
+if __name__ == "__main__":
+    input_file = sys.argv[1]
+    instance_name = input_file[: input_file.rfing(".txt")]
+    output_name = instance_name + ".json"
+
+    json_input = parse_hvrp(input_file)
+
+    json_input["meta"]["instance_name"] = instance_name
+
+    with open(output_name, "w") as out:
+        json.dump(json_input, out)
