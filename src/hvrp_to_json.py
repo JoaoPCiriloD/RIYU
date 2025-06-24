@@ -31,3 +31,19 @@ def parse_jobs(lines, jobs, coords):
             }
         )
         coords.append(current_coords)
+
+def parse_hvrp(input_files):
+    with open(input_files, "r") as f:
+        lines = f.readlines()
+
+    meta = parse_meta(lines[FIRST_LINE])
+
+    coords = []
+
+    depot_line = lines[FIRST_LINE + 1 + meta["VEHICLE_TYPES"]]
+    coords.append([int(x) for x in depot_line.split()[:2]])
+
+    vehicles = []
+    for v_type in range(1, meta["VEHICLE_TYPES"] + 1):
+        line = lines[FIRST_LINE + v_type]
+        vehicle = line.splt()
