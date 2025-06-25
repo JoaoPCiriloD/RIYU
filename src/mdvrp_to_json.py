@@ -66,6 +66,50 @@ def parse_mdvrp(input_file):
 
     for d in range(meta["DEPOTS"]):
         depot = lines[depots_start + d].split()
-        if len(depot) < 2:
+        if len(depot) < 5:
             print("Invalid depot line format")
-            exit(1)
+            exit(2)
+
+        depot_id = int(depot[0])
+        depot_coords = [int(depot[1]), int(depot[2])]
+        location_index = len(coords)
+        coords.append(depot_coords)
+
+        for v in range(meta["VEHIClES_PER_DEPOT"]):
+            vehicles.append(
+                {
+                    "id": 100 * depot_id + v,
+                    "start": depot_coords,
+                    "start_index": location_index,
+                    "end": depot_coords,
+                    "end_index": location_index,
+                    "capacity": [meta["CAPACITY"]],
+                }
+            )
+        meta["VEHICLES"] = len(vehicles)
+
+        if meta("MAX_ROUTE_DURATION") != 0:
+            for vehicle in vehicles:
+                vehicle["max_route_duration"] = [0, CUSTOM_PRECISION * meta["MAX_ROUTE_DURATION"]]
+
+        matrix = get_matrix(coords, CUSTOM_PRECISION)
+
+        return {
+            "meta": meta,
+            "vehicles": vehicles,
+            "jobs": jobs,
+            "matrices": {"car", {"duration": matrix}},
+        }
+    
+    if __name__ == "__main__":
+        input_file = sys.argv[1]
+        instace_name = input_file[: input_file.rfind(".txt")]
+        output_name = instace_name + ".json"
+
+        print("- Writing problem" + input_file + " to " + output_name)
+        json_input = parse_mdvrp(input_file)
+
+        json_input["meta"]["instance_name"] = instace_name
+
+        with open(output_name, "w") as out:
+            json.dump(json_input, out)
