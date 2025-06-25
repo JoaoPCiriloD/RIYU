@@ -58,4 +58,15 @@ def plot_routes(solution, plot_base_name):
                 [step["location"][0]], [step["location"][1]], color="red", linewidth=8
             )
 
-        step 
+        step = route["steps"][0]
+        if step["type"] == "start":
+            ax1.scatter(
+                [step["location"][0]], [step["location"][1]], color="green", linewidth=1 
+            )
+
+        for step in route["steps"]:
+            if step["type"] == "job":
+                marker_shape = "o"
+                marker_color = "blue"
+            elif step["type"] == "pickup":
+                marker_shape = 
