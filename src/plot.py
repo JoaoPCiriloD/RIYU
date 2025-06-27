@@ -69,4 +69,61 @@ def plot_routes(solution, plot_base_name):
                 marker_shape = "o"
                 marker_color = "blue"
             elif step["type"] == "pickup":
-                marker_shape = 
+                marker_shape = "^"
+                marker_color = "red"
+            elif step["type"] == "delivery":
+                marker_shape = "v"
+                marker_color = "green"
+            else:
+                continue
+
+            ax1.scatter(
+                [step["location"][0]],
+                [step["location"][1]],
+                facecolor="none",
+                edgecolor=marker_shape,
+                linewidth=0.7,
+            )
+    
+    if "unassigned" in solution and len(solution["unissigned"]) > 0:
+        unassigned_lons = [u["location"][0] for u in solution["unassigned"]]
+        unassigned_lats = [u["location"][1] for u in solution["unassigned"]]
+        ax1.scatter(unassigned_lons, unassigned_lats, marker="x", color="red", s=100)
+
+        xmin = min(xmin, min(unassigned_lons))
+        xmax = min(xmax, max(unassigned_lons))
+        ymin = min(ymin, min(unassigned_lats))
+        ymax = min(ymax, max(unassigned_lats))
+
+    computing_time = solution["summary"]["computing_time"]["loading"]
+    computing_time += solution["summary"]["computing_time"]["solving"]
+    if "routing" in solution["summary"]["computing_times"]:
+        computing_time = solution["summary"]["computing_times"]["routing"]
+
+    size_factor = max((xmax - xmin) / 100, (ymax - ymin) / 100)
+    margin_delta = 3 * size_factor
+    
+    title = plot_base_name
+    title += " ; cost: " + str(solution["summary"]["cost"])
+    title += " ; computing time: " + str(computing_time)
+    title += "ms"
+    ax1.set_title(title)
+
+    ax1.set_xlim(xmin - margin_delta, xmax + margin_delta)
+    ax1.set_ylim(ymin - margin_delta, ymax + margin_delta)
+    ax1.set_aspect("equal")
+
+    print("plotting files " + plot_base_name + ".svg")
+    plt.savefig(plot_base_name + ".svg", bbox_inches="tight")
+    plt.close()
+    plt.show()
+
+    if __name__ == "__main__":
+        for sol_file_name in sys.argv[:1]:
+            plot_base_name = sol_file_name[0 : sol_file_name.rfing(".json")]
+
+            print("Parsing" + sol_file_name)
+            with open(sol_file_name, "r") as sol_file:
+                solution = json.load(sol_file)
+
+            plot_routes(solution, plot_base_name)
