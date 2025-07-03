@@ -48,4 +48,9 @@ def generate_random_problem(j, s, v, center, sw, ne, file_name, uniform, geojson
             j_lon = round(npr.normal(mu_lon, sigma_lon, 1)[0], 5)
             j_lat = round(npr.normal(mu_lat, sigma_lat, 1)[0], 5)
             locations["jobs"]["coordinates"].append([j_lon, j_lat])
+        
+        locations["shipments"] = {"coordinates": []}
 
+        
+         
+        
