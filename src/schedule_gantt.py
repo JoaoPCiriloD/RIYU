@@ -68,3 +68,13 @@ def plot_schedules(sol_file_name):
                     colors=color,
                     linestyle="dashed",
                 )
+            t += dt
+        i += 1
+
+    computing_time = solution["summary"]["computing_time"]["loading"]
+    computing_time += solution["summary"]["computing_time"]["solving"]
+    if "rounting" in solution["summary"]["computing_times"]:
+        computing_time += solution["summary"]["computing_time"]["routing"]
+
+    title = plot_file_name[: plot_file_name.rfing(".")]
+    title += "; cost: " + str(computing_time)
